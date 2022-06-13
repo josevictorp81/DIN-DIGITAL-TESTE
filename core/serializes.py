@@ -21,6 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'quantity']
+        fields = ['id', 'name', 'price', 'weight']
         read_only_fields = ['id']
         

@@ -78,15 +78,15 @@ class ProductPrivateTest(APITestCase):
         self.client.force_authenticate(user=self.user)
     
     def test_create_product(self):
-        payload = {'name': 'testproduct', 'price': 2.5, 'quantity': 3}
+        payload = {'name': 'testproduct', 'price': 2.5, 'weight': 3.2}
 
         res = self.client.post(CREATE_PRODUCT_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_list_product(self):
-        Product.objects.create(name='testproduct1', price=2.5, quantity=3)
-        Product.objects.create(name='testproduct2', price=2.9, quantity=5)
+        Product.objects.create(name='testproduct1', price=2.5, weight=3.2)
+        Product.objects.create(name='testproduct2', price=2.9, weight=5.2)
 
         res = self.client.get(LIST_PRODUCT_URL)
 
@@ -97,8 +97,8 @@ class ProductPrivateTest(APITestCase):
         self.assertEqual(res.data, serializer.data)
     
     def test_list_id_product(self):
-        product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
-        Product.objects.create(name='testproduct2', price=2.9, quantity=5)
+        product = Product.objects.create(name='testproduct1', price=2.5, weight=3.2)
+        Product.objects.create(name='testproduct2', price=2.9, weight=5.2)
 
         url = detail_product_view('list-product-id', product.id)
         res = self.client.get(url)
@@ -108,9 +108,9 @@ class ProductPrivateTest(APITestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_update_product(self):
-        product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
+        product = Product.objects.create(name='testproduct1', price=2.5, weight=3.2)
 
-        payload = {'name': 'testproductupdate', 'price': 3.1, 'quantity': 9}
+        payload = {'name': 'testproductupdate', 'price': 3.1, 'weight': 9.2}
 
         url = detail_product_view('update-product', product.id)
         self.client.put(url, payload)
@@ -118,10 +118,10 @@ class ProductPrivateTest(APITestCase):
         product.refresh_from_db()
         self.assertEqual(product.name, payload['name'])
         self.assertEqual(product.price, payload['price'])
-        self.assertEqual(product.quantity, payload['quantity'])
+        self.assertEqual(product.weight, payload['weight'])
     
     def test_delete_product(self):
-        product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
+        product = Product.objects.create(name='testproduct1', price=2.5, weight=3.2)
 
         url = detail_product_view('delete-product', product.id)
         res = self.client.delete(url)
