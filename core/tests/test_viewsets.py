@@ -3,8 +3,12 @@ from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth.models import User
 
+from core.models import Product
+from core.serializes import ProductSerializer
+
 USER_URL = reverse('signup')
 TOKEN_URL = reverse('token')
+CREATE_PRODUCT_URL = reverse('create-product')
 
 class UserTest(APITestCase):
     def setUp(self) -> None:
@@ -50,3 +54,26 @@ class UserTest(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('access', res.data)
+
+
+class ProductPublicTest(APITestCase):
+    def test_login_required(self):
+        self.cliente = APIClient()
+
+        res = self.client.get(CREATE_PRODUCT_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class ProductPrivateTest(APITestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='passwordtest')
+        self.client.force_authenticate(user=self.user)
+    
+    def test_create_product(self):
+        payload = {'name': 'testproduct', 'price': 2.5, 'quantity': 3}
+
+        res = self.client.post(CREATE_PRODUCT_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
