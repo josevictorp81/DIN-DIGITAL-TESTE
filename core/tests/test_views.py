@@ -11,6 +11,11 @@ TOKEN_URL = reverse('token')
 CREATE_PRODUCT_URL = reverse('create-product')
 LIST_PRODUCT_URL = reverse('list-product')
 
+
+def detail_product_view(product_id):
+    return reverse('list-product-id', args=[product_id])
+
+
 class UserTest(APITestCase):
     def setUp(self) -> None:
         self.client = APIClient()
@@ -87,6 +92,17 @@ class ProductPrivateTest(APITestCase):
 
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+    
+    def test_list_id_product(self):
+        product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
+        Product.objects.create(name='testproduct2', price=2.9, quantity=5)
+
+        url = detail_product_view(product.id)
+        res = self.client.get(url)
+        serializer = ProductSerializer(product)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
