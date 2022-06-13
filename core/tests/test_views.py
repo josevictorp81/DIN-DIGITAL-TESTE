@@ -12,12 +12,9 @@ CREATE_PRODUCT_URL = reverse('create-product')
 LIST_PRODUCT_URL = reverse('list-product')
 
 
-def detail_product_view(product_id):
-    return reverse('list-product-id', args=[product_id])
-
-def update_product_view(product_id):
-    return reverse('update-product', args=[product_id])
-
+def detail_product_view(path, product_id):
+    return reverse(path, args=[product_id])
+    
 
 class UserTest(APITestCase):
     def setUp(self) -> None:
@@ -103,7 +100,7 @@ class ProductPrivateTest(APITestCase):
         product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
         Product.objects.create(name='testproduct2', price=2.9, quantity=5)
 
-        url = detail_product_view(product.id)
+        url = detail_product_view('list-product-id', product.id)
         res = self.client.get(url)
         serializer = ProductSerializer(product)
 
@@ -115,10 +112,18 @@ class ProductPrivateTest(APITestCase):
 
         payload = {'name': 'testproductupdate', 'price': 3.1, 'quantity': 9}
 
-        url = update_product_view(product.id)
+        url = detail_product_view('update-product', product.id)
         self.client.put(url, payload)
 
         product.refresh_from_db()
         self.assertEqual(product.name, payload['name'])
         self.assertEqual(product.price, payload['price'])
         self.assertEqual(product.quantity, payload['quantity'])
+    
+    def test_delete_product(self):
+        product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
+
+        url = detail_product_view('delete-product', product.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)

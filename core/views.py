@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from .serializes import UserSerializer, ProductSerializer
@@ -28,6 +28,12 @@ class ProductRetrieveAPIView(RetrieveAPIView):
 
 
 class ProductUpdateAPIView(UpdateAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    permission_classes = [IsAuthenticated]
+
+
+class ProductDestroyAPIView(DestroyAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     permission_classes = [IsAuthenticated]
