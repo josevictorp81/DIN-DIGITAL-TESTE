@@ -13,3 +13,9 @@ class UserCreateAPIView(CreateAPIView):
 class ProductCreateAPIView(CreateAPIView):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
+
+
+class ProductListAPIView(ListAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    

@@ -9,6 +9,7 @@ from core.serializes import ProductSerializer
 USER_URL = reverse('signup')
 TOKEN_URL = reverse('token')
 CREATE_PRODUCT_URL = reverse('create-product')
+LIST_PRODUCT_URL = reverse('list-product')
 
 class UserTest(APITestCase):
     def setUp(self) -> None:
@@ -77,3 +78,15 @@ class ProductPrivateTest(APITestCase):
         res = self.client.post(CREATE_PRODUCT_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_list_product(self):
+        Product.objects.create(name='testproduct1', price=2.5, quantity=3)
+        Product.objects.create(name='testproduct2', price=2.9, quantity=5)
+
+        res = self.client.get(LIST_PRODUCT_URL)
+
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
