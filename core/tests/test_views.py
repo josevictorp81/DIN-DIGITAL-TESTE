@@ -15,6 +15,9 @@ LIST_PRODUCT_URL = reverse('list-product')
 def detail_product_view(product_id):
     return reverse('list-product-id', args=[product_id])
 
+def update_product_view(product_id):
+    return reverse('update-product', args=[product_id])
+
 
 class UserTest(APITestCase):
     def setUp(self) -> None:
@@ -106,3 +109,16 @@ class ProductPrivateTest(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_update_product(self):
+        product = Product.objects.create(name='testproduct1', price=2.5, quantity=3)
+
+        payload = {'name': 'testproductupdate', 'price': 3.1, 'quantity': 9}
+
+        url = update_product_view(product.id)
+        self.client.put(url, payload)
+
+        product.refresh_from_db()
+        self.assertEqual(product.name, payload['name'])
+        self.assertEqual(product.price, payload['price'])
+        self.assertEqual(product.quantity, payload['quantity'])
