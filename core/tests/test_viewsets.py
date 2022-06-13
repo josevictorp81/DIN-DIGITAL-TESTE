@@ -3,7 +3,7 @@ from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-USER_URL = reverse('user-list')
+USER_URL = reverse('signup')
 TOKEN_URL = reverse('token')
 
 class UserTest(APITestCase):
